@@ -9,11 +9,13 @@ class GrainSizeDistribution(object):
 	Parameters:
 		snap: <SnapshotContainer>
 	"""
-	species_rho  = {"Aliphatic C": 3.3, "PAH": 3.3, "Silicate": 2.2}
+	species_rho  = {"Aliphatic C": 2.2, "PAH": 2.2, "Silicate": 3.3}
 	species_keys = species_rho.keys()
+
 
 	def __init__(self, snap):
 		self.set_grain_size_distribution(snap)
+
 
 	def set_grain_size_distribution(self, snap):
 		"""
@@ -41,6 +43,7 @@ class GrainSizeDistribution(object):
 		for key in GrainSizeDistribution.species_keys:
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
 
+
 	def get_grain_size_distribution(self, spe, qtype):
 		"""
 		return the grain number count or mass as a function of grain sizes.
@@ -62,6 +65,7 @@ class GrainSizeDistribution(object):
 			print("species keyword in",list(GrainSizeDistribution.species_keys))
 			return np.array([])
 
+
 	def compute_abundances(self):
 		"""
 		compute abundances of different grain species
@@ -76,6 +80,7 @@ class GrainSizeDistribution(object):
 			i += 1
 
 		return dict(zip(GrainSizeDistribution.species_keys,m_spe / np.sum(m_spe)))
+
 
 	def _from_n_to_m(self, arr, key): # TODO: this looks ugly
 		return arr * self.a**3 * GrainSizeDistribution.species_rho[key] # cgs
