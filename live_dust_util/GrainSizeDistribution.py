@@ -8,21 +8,29 @@ class GrainSizeDistribution(object):
 
 	Parameters:
 		snap: <SnapshotContainer>
+		p_c: <ndarray[3], dtype = float64> center to compute radii
+		r_s: <float32> lower bound of radius interval
+		r_e: <float32> upper bound of radius interval
+		lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
 	species_rho  = {"Aliphatic C": 2.2, "PAH": 2.2, "Silicate": 3.3}
 	species_keys = species_rho.keys()
 
 
-	def __init__(self, snap):
-		self.set_grain_size_distribution(snap)
+	def __init__(self, snap, p_c = [], r_s = None, r_e = None, lz = np.array([0.,0.,1.])):
+		self.set_grain_size_distribution(snap, p_c, r_s, r_e, lz)
 
 
-	def set_grain_size_distribution(self, snap):
+	def set_grain_size_distribution(self,snap, p_c, r_s, r_e, lz):
 		"""
 		Computes properties related to grain size distributions from a snapshot
 
 		Parameters:
 			snap: <SnapshotContainer>
+			p_c: <ndarray[3], dtype = float64> center to compute radii
+			r_s: <float32> lower bound of radius interval
+			r_e: <float32> upper bound of radius interval
+			lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 		"""
 
 		self.a = 10** np.linspace(-3,0,16) # I need to refactor this because ideally 
@@ -35,11 +43,21 @@ class GrainSizeDistribution(object):
 
 		nbins = len(self.a)
 
-		f_PAH = snap.dataset['PartType3/Dust_NumGrains'][:,-nbins:]
+		if (p_c == []) or (r_s == None) or (r_e == None):
+			filt = np.where(snap.dataset['PartType3/Masses'] > 0) # essentially no filter applied
+		else:
+			x = snap.dataset['PartType3/Coordinates'][:,0] - p_c[0]
+			y = snap.dataset['PartType3/Coordinates'][:,1] - p_c[1]
+			z = snap.dataset['PartType3/Coordinates'][:,2] - p_c[2]
+			r_s2 = r_s**2
+			r_e2 = r_e**2
+			r2 = x**2 + y**2 + z**2
+			filt = np.where((r2 >= r_s2) & (r2 < r_e2))
+		f_PAH = snap.dataset['PartType3/Dust_NumGrains'][filt][:,-nbins:]
 		self.DNSF["Aliphatic C"] = np.sum((1.0 - f_PAH)
-			                       * snap.dataset['PartType3/Dust_NumGrains'][:,nbins: 2 * nbins], axis=0)
-		self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset['PartType3/Dust_NumGrains'][:,nbins: 2 * nbins], axis=0)
-		self.DNSF["Silicate"] = np.sum(snap.dataset['PartType3/Dust_NumGrains'][:, : nbins], axis=0)
+			                       * snap.dataset['PartType3/Dust_NumGrains'][filt][:,nbins: 2 * nbins], axis=0)
+		self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset['PartType3/Dust_NumGrains'][filt][:,nbins: 2 * nbins], axis=0)
+		self.DNSF["Silicate"] = np.sum(snap.dataset['PartType3/Dust_NumGrains'][filt][:, : nbins], axis=0)
 		for key in GrainSizeDistribution.species_keys:
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
 

@@ -23,11 +23,10 @@ class ExtinctionLaw(object):
 		# so that the extinction law is automatically updated.
 		# And I seriously do not want users to modify gsd of an instance.
 		# The current strategy may look ugly but I will make it better as I learn more.
-		self._wave = wave 
 		self.__gsd = gsd
 		if (ExtinctionLaw._x0 == []) or (ExtinctionLaw._op == []):
 			ExtinctionLaw.set_optical_properties(wave, op_a, op_gra, op_sil)
-		self.reset_wavelength(self._wave)
+		self.reset_wavelength(wave)
 
 	@classmethod
 	def _Qext_load(cls, op): #this one smells
@@ -68,8 +67,27 @@ class ExtinctionLaw(object):
 	def reset_wavelength(self, wave): #TODO: only allow change wavelength by this method
 		self._wave = wave
 		self._Qext = self._Qext_set(self._wave)
+		#TODO: consider band pass + transfer function
 		self._Qext_V = self._Qext_set(np.array([0.551]))
+		self._Qext_B = self._Qext_set(np.array([0.445]))
 		self._compute_extinction_law()
+
+	def _compute_extinction_law(self):
+		self.extinction = np.zeros(len(self._wave))
+		self.AV   = 0.
+		self.AB   = 0.
+		self.E_BV = 0.
+		self.RV   = 0.
+		K = 2.5 * np.log10(np.e) * np.pi
+		for key in GrainSizeDistribution.species_keys:
+			DNSF = self.__gsd.DNSF[key]
+			self.AV += K * np.sum(self.__gsd.a**2*self._Qext_V[key] * DNSF)
+			self.AB += K * np.sum(self.__gsd.a**2*self._Qext_B[key] * DNSF)
+			for i in range(len(self._wave)):
+				self.extinction[i] += K * np.sum(self.__gsd.a**2*self._Qext[key][:,i]*DNSF)
+		self.extinction /= self.AV
+		self.E_BV = self.AB - self.AV
+		self.RV = self.AV / self.E_BV
 
 	def get_wavelength(self):
 		return self._wave
@@ -114,15 +132,3 @@ class ExtinctionLaw(object):
 				Qext[key] = 10**Q_2D
 
 		return Qext
-
-
-	def _compute_extinction_law(self):
-		self.extinction = np.zeros(len(self._wave))
-		self.Av = 0.
-		K = 2.5 * np.log10(np.e) * np.pi
-		for key in GrainSizeDistribution.species_keys:
-			DNSF = self.__gsd.DNSF[key]
-			self.Av += K * np.sum(self.__gsd.a**2*self._Qext_V[key] * DNSF)
-			for i in range(len(self._wave)):
-				self.extinction[i] += K * np.sum(self.__gsd.a**2*self._Qext[key][:,i]*DNSF)
-		self.extinction /= self.Av
