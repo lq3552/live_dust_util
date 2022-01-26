@@ -57,7 +57,7 @@ class ExtinctionLaw(object):
 		[op_sil]: str, filename of optical property table for silicates
 		"""
 		cls._x0 = np.log10(np.loadtxt(op_a))
-		cls._op = dict.fromkeys(GrainSizeDistribution.species_keys,[])
+		cls._op = dict.fromkeys(GrainSizeDistribution.species_keys, None)
 		# read original tables into arrays
 		cls._op['Aliphatic C']  = cls._Qext_load(op_gra)
 		cls._op['PAH'] = cls._Qext_load(op_gra)
@@ -108,7 +108,7 @@ class ExtinctionLaw(object):
 		ntab = len(ExtinctionLaw._x0)
 		dim = (len(x),len(wlen)) # dim: wavelength x grain size
 		keys = GrainSizeDistribution.species_keys
-		Qext = dict.fromkeys(keys,[])
+		Qext = dict.fromkeys(keys, None)
 	
 		# extended in wlen
 		Q_wl = np.zeros((ntab,dim[1]))

@@ -38,7 +38,7 @@ class GrainSizeDistribution(object):
 #		snapshot (which should be saved as a subdataset of PartType3 or an attribute 
 #		of the header but as a practice I simply ignore this for now. So does number
 #		of species.
-		self.DNSF = dict.fromkeys(GrainSizeDistribution.species_keys, [])
+		self.DNSF = dict.fromkeys(GrainSizeDistribution.species_keys, None)
 		self.DMSF = copy.deepcopy(self.DNSF)
 
 		nbins = len(self.a)
@@ -46,18 +46,18 @@ class GrainSizeDistribution(object):
 		if (p_c == []) or (r_s == None) or (r_e == None):
 			filt = np.where(snap.dataset['PartType3/Masses'] > 0) # essentially no filter applied
 		else:
-			x = snap.dataset['PartType3/Coordinates'][:,0] - p_c[0]
-			y = snap.dataset['PartType3/Coordinates'][:,1] - p_c[1]
-			z = snap.dataset['PartType3/Coordinates'][:,2] - p_c[2]
+			x = snap.dataset["PartType3/Coordinates"][:,0] - p_c[0]
+			y = snap.dataset["PartType3/Coordinates"][:,1] - p_c[1]
+			z = snap.dataset["PartType3/Coordinates"][:,2] - p_c[2]
 			r_s2 = r_s**2
 			r_e2 = r_e**2
 			r2 = x**2 + y**2 + z**2
 			filt = np.where((r2 >= r_s2) & (r2 < r_e2))
-		f_PAH = snap.dataset['PartType3/Dust_NumGrains'][filt][:,-nbins:]
+		f_PAH = snap.dataset["PartType3/Dust_NumGrains"][filt][:,-nbins:]
 		self.DNSF["Aliphatic C"] = np.sum((1.0 - f_PAH)
-			                       * snap.dataset['PartType3/Dust_NumGrains'][filt][:,nbins: 2 * nbins], axis=0)
-		self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset['PartType3/Dust_NumGrains'][filt][:,nbins: 2 * nbins], axis=0)
-		self.DNSF["Silicate"] = np.sum(snap.dataset['PartType3/Dust_NumGrains'][filt][:, : nbins], axis=0)
+			                       * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
+		self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
+		self.DNSF["Silicate"] = np.sum(snap.dataset["PartType3/Dust_NumGrains"][filt][:, : nbins], axis=0)
 		for key in GrainSizeDistribution.species_keys:
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
 
