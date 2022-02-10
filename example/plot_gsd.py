@@ -2,8 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import live_dust_util.SnapshotContainer as Snap
 import live_dust_util.GrainSizeDistribution as GSD
-import live_dust_util.ExtinctionLaw as Ext
-import live_dust_util.ExtinctionLawParam as ExtPar
 
 if __name__ == "__main__":
 	"""
