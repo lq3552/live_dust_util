@@ -15,9 +15,12 @@ class SnapshotContainer(object):
 	                "PartType0/Masses",
 					"PartType0/Coordinates",
 					"PartType0/GFM_Metallicity",
+					"PartType0/GFM_Metals",
+					"PartType0/MolecularHFrac",
 		            "PartType3/Dust_NumGrains",
 					"PartType3/Masses",
 					"PartType3/Coordinates",
+					"PartType3/Dust_MetalFractions",
 					"PartType4/Masses"] # I seriously don't want users to change it
 
 	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot'):

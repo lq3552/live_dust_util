@@ -1,5 +1,7 @@
-__version__ = '0.2'
-__all__ = ['SnapshotContainer','GrainSizeDistribution','ExtinctionLaw','ExtinctionLawParam','Galaxy','GalaxyCatalog']
+__version__ = '0.3'
+__all__ = ['SnapshotContainer', 'GrainSizeDistribution', 'ExtinctionLaw', 'ExtinctionLawParam',
+		   'Galaxy', 'GalaxyCatalog',
+		   'utils']
 
 from .SnapshotContainer import SnapshotContainer
 from .GrainSizeDistribution import GrainSizeDistribution
