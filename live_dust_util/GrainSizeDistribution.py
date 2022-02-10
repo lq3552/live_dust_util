@@ -60,8 +60,8 @@ class GrainSizeDistribution(object):
 		self.DNSF["Aliphatic C"] = np.sum((1.0 - f_PAH)
 			                       * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
 		self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
-		self.DNSF["Silicate"] = np.sum(np.matmul(mass_silicate_test / mass_silicate_mix,\
-					            snap.dataset["PartType3/Dust_NumGrains"][filt][:, : nbins]), axis=0)
+		self.DNSF["Silicate"] = np.matmul(mass_silicate_test / mass_silicate_mix,\
+					            snap.dataset["PartType3/Dust_NumGrains"][filt][:, : nbins])
 		for key in GrainSizeDistribution.species_keys:
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
 
