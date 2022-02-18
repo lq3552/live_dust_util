@@ -9,6 +9,7 @@ class GrainSizeDistribution(object):
 
 	Parameters:
 		snap: <SnapshotContainer>
+		a  : <ndarray[], dtype = float64> centers of grain size bins
 		p_c: <ndarray[3], dtype = float64> center to compute radii
 		r_s: <float32> lower bound of radius interval
 		r_e: <float32> upper bound of radius interval
@@ -18,23 +19,26 @@ class GrainSizeDistribution(object):
 	species_keys = species_rho.keys()
 
 
-	def __init__(self, snap, p_c = [], r_s = None, r_e = None, lz = np.array([0.,0.,1.])):
-		self.set_grain_size_distribution(snap, p_c, r_s, r_e, lz)
+	def __init__(self, snap, a = 10**np.linspace(-3,0,16), p_c = [], r_s = None, r_e = None, lz = np.array([0.,0.,1.])):
+		self.set_grain_size_distribution(snap, a, p_c, r_s, r_e, lz)
 
 
-	def set_grain_size_distribution(self,snap, p_c, r_s, r_e, lz):
+	def set_grain_size_distribution(self,snap, a, p_c, r_s, r_e, lz):
 		"""
 		Computes properties related to grain size distributions from a snapshot
 
 		Parameters:
 			snap: <SnapshotContainer>
+			a  : <ndarray[], dtype = float64> centers of grain size bins
 			p_c: <ndarray[3], dtype = float64> center to compute radii
 			r_s: <float32> lower bound of radius interval
 			r_e: <float32> upper bound of radius interval
 			lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 		"""
 
-		self.a = 10** np.linspace(-3,0,16) # I need to refactor this because ideally 
+		self.a = a # I need to refactor this because ideally 
+		if len(self.a) > 1:
+			self.dloga = np.log10(self.a[1] / self.a[0])
 #		the method should be able to read grain_size_distributions directly from the 
 #		snapshot (which should be saved as a subdataset of PartType3 or an attribute 
 #		of the header but as a practice I simply ignore this for now. So does number
@@ -105,4 +109,4 @@ class GrainSizeDistribution(object):
 
 
 	def _from_n_to_m(self, arr, key): # TODO: this looks ugly
-		return arr * self.a**3 * GrainSizeDistribution.species_rho[key] # cgs
+		return arr * 4 * np.pi / 3 * self.a**3 * GrainSizeDistribution.species_rho[key] # cgs
