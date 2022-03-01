@@ -11,17 +11,11 @@ class SnapshotContainer(object):
 		snap_dir: <str> directory name of the input snapshot; default = '.'
 		snap_pref: <str> prefix of the input snapshot; default = 'snapshot'
 	"""
-	__field_list = ["PartType0/Density",
-	                "PartType0/Masses",
-					"PartType0/Coordinates",
-					"PartType0/GFM_Metallicity",
-					"PartType0/GFM_Metals",
-					"PartType0/MolecularHFrac",
-		            "PartType3/Dust_NumGrains",
+	__field_list = ["PartType3/Dust_NumGrains",
 					"PartType3/Masses",
 					"PartType3/Coordinates",
 					"PartType3/Dust_MetalFractions",
-					"PartType4/Masses"] # I seriously don't want users to change it
+					] # I seriously don't want users to change it
 
 	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot'):
 		self.dataset = dict.fromkeys(SnapshotContainer.__field_list, None)
