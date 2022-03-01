@@ -59,13 +59,10 @@ class GrainSizeDistribution(object):
 			r2 = x**2 + y**2 + z**2
 			filt = np.where((r2 >= r_s2) & (r2 < r_e2))
 		f_PAH = snap.dataset["PartType3/Dust_NumGrains"][filt][:,-nbins:]
-		mass_silicate_test = snap.dataset["PartType3/Dust_MetalFractions"][filt][:, IndexUtil.elem_i_Si] / 0.166
-		mass_silicate_mix  = 1.0 - snap.dataset["PartType3/Dust_MetalFractions"][filt][:, IndexUtil.elem_i_C];
 		self.DNSF["Aliphatic C"] = np.sum((1.0 - f_PAH)
 			                       * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
 		self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
-		self.DNSF["Silicate"] = np.matmul(mass_silicate_test / mass_silicate_mix,\
-					            snap.dataset["PartType3/Dust_NumGrains"][filt][:, : nbins])
+		self.DNSF["Silicate"] = np.sum(snap.dataset["PartType3/Dust_NumGrains"][filt][:, : nbins], axis=0)
 		for key in GrainSizeDistribution.species_keys:
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
 
