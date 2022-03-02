@@ -70,12 +70,18 @@ class ExtinctionLaw(object):
 		#TODO: consider band pass + transfer function
 		self._Qext_V = self._Qext_set(np.array([0.551]))
 		self._Qext_B = self._Qext_set(np.array([0.445]))
+		self._Qext_bump = self._Qext_set(np.array([0.2175]))
+		self._Qext_1500 = self._Qext_set(np.array([0.1500]))
+		self._Qext_3000 = self._Qext_set(np.array([0.3000]))
 		self._compute_extinction_law()
 
 	def _compute_extinction_law(self):
 		self.extinction = np.zeros(len(self._wave))
 		self.AV   = 0.
 		self.AB   = 0.
+		self.A1500 = 0.
+		self.A3000 = 0.
+		self.Abump = 0.
 		self.E_BV = 0.
 		self.RV   = 0.
 		K = 2.5 * np.log10(np.e) * np.pi
@@ -83,11 +89,17 @@ class ExtinctionLaw(object):
 			DNSF = self.__gsd.DNSF[key]
 			self.AV += K * np.sum(self.__gsd.a**2*self._Qext_V[key] * DNSF)
 			self.AB += K * np.sum(self.__gsd.a**2*self._Qext_B[key] * DNSF)
+			self.A1500 += K * np.sum(self.__gsd.a**2*self._Qext_1500[key] * DNSF)
+			self.A3000 += K * np.sum(self.__gsd.a**2*self._Qext_3000[key] * DNSF)
+			self.Abump += K * np.sum(self.__gsd.a**2*self._Qext_bump[key] * DNSF)
 			for i in range(len(self._wave)):
 				self.extinction[i] += K * np.sum(self.__gsd.a**2*self._Qext[key][:,i]*DNSF)
 		self.extinction /= self.AV
 		self.E_BV = self.AB - self.AV
 		self.RV = self.AV / self.E_BV
+		self.slope_uo = self.A1500 / self.AV
+		self.bump = (self.Abump  - 0.33 * self.A1500 - 0.67 * self.A3000) / self.Abump
+		self.Abump = self.Abump - 0.33 * self.A1500 - 0.67 * self.A3000
 
 	def get_wavelength(self):
 		return self._wave
