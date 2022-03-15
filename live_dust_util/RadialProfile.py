@@ -25,7 +25,7 @@ class RadialProfile():
 	"""
 	field_list = ["GasDensity",
 				  "DustDensity",
-				  "SFR",
+				  "SigmaSFR",
 				  "BumpStrength",
 				  "UVOPSlope",
 				  "RV",
@@ -69,14 +69,14 @@ class RadialProfile():
                                      snap.dataset["PartType3/Dust_DustDensity"][filt_d],
                                      weights = snap.dataset["PartType3/Masses"][filt_d]
 									 )
-				self.data_radial["SFR"][i] = np.average(
-                                     snap.dataset["PartType0/StarFormationRate"][filt],
-                                     weights = snap.dataset["PartType0/Masses"][filt]
-									 )
+				self.data_radial["SigmaSFR"][i] = np.sum(
+                                     snap.dataset["PartType0/StarFormationRate"][filt]) / (np.pi* (2 * self.rad[i] * drad + drad**2)) #,
+                                     #weights = snap.dataset["PartType0/Masses"][filt]
+									 #)
 				self.data_radial["BumpStrength"][i] = ext.bump
 				self.data_radial["UVOPSlope"][i] = ext.slope_uo
 				self.data_radial["RV"][i] = ext.RV
-				self.data_radial["CarbonFraction"][i] = (abu['Aliphatic C'] + abu['PAH'])# / abu['Silicate']
+				self.data_radial["CarbonFraction"][i] = (abu['PAH'] + abu['Aliphatic C'])# / abu['Silicate']
 				self.data_radial["ExtinctionCurve"][i] = ext.extinction
 			except ZeroDivisionError:
 				print("RuntimeWarning: find no particles within the annulus [%e, %e)!" 
