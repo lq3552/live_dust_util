@@ -24,6 +24,7 @@ class RadialProfile():
 		lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
 	field_list = ["GasDensity",
+				  "SigmaGas",
 				  "DustDensity",
 				  "SigmaSFR",
 				  "BumpStrength",
@@ -71,6 +72,10 @@ class RadialProfile():
 									 )
 				self.data_radial["SigmaSFR"][i] = np.sum(
                                      snap.dataset["PartType0/StarFormationRate"][filt]) / (np.pi* (2 * self.rad[i] * drad + drad**2)) #,
+                                     #weights = snap.dataset["PartType0/Masses"][filt]
+									 #)
+				self.data_radial["SigmaGas"][i] = np.sum(
+                                     snap.dataset["PartType0/Masses"][filt]) / (np.pi* (2 * self.rad[i] * drad + drad**2)) #,
                                      #weights = snap.dataset["PartType0/Masses"][filt]
 									 #)
 				self.data_radial["BumpStrength"][i] = ext.bump
