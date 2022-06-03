@@ -23,7 +23,9 @@ class SnapshotContainer(object):
 					"PartType3/Masses",
 					"PartType3/Coordinates",
 					"PartType3/Dust_MetalFractions",
-					"PartType4/Masses"] # I seriously don't want users to change it
+					"PartType4/Masses",
+					"PartType4/SNIaNumber",
+					"PartType4/SNIINumber"] # I seriously don't want users to change it
 
 	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot'):
 		self.dataset = dict.fromkeys(SnapshotContainer.__field_list, None)
