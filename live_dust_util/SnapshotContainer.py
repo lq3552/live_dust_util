@@ -12,7 +12,7 @@ class SnapshotContainer(object):
 		snap_dir: <str> directory name of the input snapshot; default = '.'
 		snap_pref: <str> prefix of the input snapshot; default = 'snapshot'
 	"""
-	# URGENT TODO: ad hoc loading
+	# URGENT TODO: ad hoc loading // Think about filtered container or full container // Memory-speed tradeoff
     # I seriously don't want users to change those fields
 	# TODO: use name convention for constants 
 	__field_list = ["PartType0/Density",

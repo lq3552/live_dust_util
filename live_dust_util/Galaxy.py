@@ -20,6 +20,7 @@ class Galaxy(object):
 	"""
 	_field_list = ["MassesByType",
 				   "Metallicity",
+				   "SFR",
 				   "RatioCOtoC",
 				   "GrainSizeDistributions",
 				   "ExtinctionQuantities",
@@ -37,6 +38,7 @@ class Galaxy(object):
 										   / self.dataset["MassesByType"]["PartType0"]
 		self.dataset["SNNumber"] = np.sum(snap.dataset["PartType4/SNIaNumber"][self.filt["PartType4"]]
 								        + snap.dataset["PartType4/SNIINumber"][self.filt["PartType4"]])
+		self.dataset["SFR"] = np.sum(snap.dataset["PartType0/StarFormationRate"][self.filt["PartType0"]]) 
 		### self.dataset["GrainSizeDistributions"] = GrainSizeDistribution(snap) ###
 		### self.dataset["ExtinctionQuantities"] ### I leave it to future work since I really don't like current implementation of ExtinctionLaw
 		self._compute_abundances(snap)
