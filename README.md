@@ -48,5 +48,5 @@ galaxy = Galaxy(snapshot)
 ## Advanced atrributes
 
 ```python
-# under construction, I am lazy
+# under construction
 ```
