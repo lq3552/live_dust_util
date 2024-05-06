@@ -5,7 +5,7 @@ live_dust_util is a tool to analyze dusty galaxies from `AREPO` simulations with
 
 You can download it via
 ```bash
-git clone https://lq3552@bitbucket.org/lq3552/live_dust_util.git
+git clone https://github.com/lq3552/live_dust_util.git
 ```
 
 ## Build
