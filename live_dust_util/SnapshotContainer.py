@@ -33,9 +33,12 @@ class SnapshotContainer(object):
 					"PartType4/SNIINumber"]
 	_part_types = ['PartType0', 'PartType3', 'PartType4']
 
-	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot'):
+	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot', snap_subno = None):
 		self.dataset = dict.fromkeys(SnapshotContainer.__field_list, None)
-		snap = h5py.File('%s/%s_%03d.hdf5' % (snap_dir, snap_pref, snap_no), 'r')
+		if snap_subno == None:
+			snap = h5py.File(f"{snap_dir}/{snap_pref}_{snap_no:03d}.hdf5" % (snap_dir, snap_pref, snap_no), 'r')
+		else:
+			snap = h5py.File(f"{snap_dir}/snapdir_{snap_no:03d}/{snap_pref}_{snap_no:03d}.{snap_subno}.hdf5%"
 		for key in self.dataset.keys():
 			self.dataset[key] = snap[key][()]
 		# used to compute filters
