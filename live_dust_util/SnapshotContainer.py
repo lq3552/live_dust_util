@@ -38,7 +38,7 @@ class SnapshotContainer(object):
 		if snap_subno == None:
 			snap = h5py.File(f"{snap_dir}/{snap_pref}_{snap_no:03d}.hdf5" % (snap_dir, snap_pref, snap_no), 'r')
 		else:
-			snap = h5py.File(f"{snap_dir}/snapdir_{snap_no:03d}/{snap_pref}_{snap_no:03d}.{snap_subno}.hdf5%"
+			snap = h5py.File(f"{snap_dir}/snapdir_{snap_no:03d}/{snap_pref}_{snap_no:03d}.{snap_subno}.hdf5%")
 		for key in self.dataset.keys():
 			self.dataset[key] = snap[key][()]
 		# used to compute filters
