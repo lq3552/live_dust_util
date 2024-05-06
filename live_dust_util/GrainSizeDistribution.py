@@ -32,10 +32,10 @@ class GrainSizeDistribution(object):
 
 		Parameters:
 			snap: <SnapshotContainer>
-			a  : <ndarray[], dtype = float64> centers of grain size bins
-			p_c: <ndarray[3], dtype = float64> center to compute radii
-			r_s: <float32> lower bound of radius interval
-			r_e: <float32> upper bound of radius interval
+			a  : <ndarray[], dtype = float64> centers of grain size bins in micron
+			p_c: <ndarray[3], dtype = float64> center to compute radii in code units
+			r_s: <float32> lower bound of radius interval in code units
+			r_e: <float32> upper bound of radius interval in code units
 			lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 		"""
 
@@ -57,7 +57,7 @@ class GrainSizeDistribution(object):
 			self.DNSF["Aliphatic C"] = np.sum((1.0 - f_PAH)
 									  * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
 			self.DNSF["PAH"] = np.sum(f_PAH * snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
-			self.DNSF["Carbonaceous"] = self.DNSF["Aliphatic C"] + self.DNSF["PAH"]
+			self.DNSF["Carbonaceous"] = np.sum(snap.dataset["PartType3/Dust_NumGrains"][filt][:,nbins: 2 * nbins], axis=0)
 			self.DNSF["Silicate"] = np.sum(snap.dataset["PartType3/Dust_NumGrains"][filt][:, : nbins], axis=0)
 		else:
 			f_C = snap.dataset["PartType3/Dust_MetalFractions"][filt][: ,IndexUtil.elem_i_C]
@@ -90,6 +90,22 @@ class GrainSizeDistribution(object):
 			print("species keyword in",list(GrainSizeDistribution.species_keys_ext))
 			return np.array([])
 
+	def compute_small_to_large_ratio(self):
+		"""
+		compute small-to-large-grain mass ratio for different grain species
+
+		return: dict, small-to-large mass ratio
+		"""
+		i = 0
+		stl = np.zeros(len(GrainSizeDistribution.species_keys_ext))
+		for key in GrainSizeDistribution.species_keys_ext:
+			filt_small = np.where(self.a <= 6e-2) # Aoyama+2020
+			filt_large = np.where(self.a > 6e-2)
+			m_small = np.sum(self.DMSF[key][filt_small])
+			m_large = np.sum(self.DMSF[key][filt_large])
+			stl[i] = m_small / m_large
+			i += 1
+		return dict(zip(GrainSizeDistribution.species_keys_ext, stl))
 
 	def compute_abundances(self):
 		"""
@@ -97,15 +113,12 @@ class GrainSizeDistribution(object):
 
 		return: dict, abundances
 		"""
-		n_spe = len(GrainSizeDistribution.species_keys)
-		m_spe = np.zeros(n_spe)
+		m_spe = np.zeros(len(GrainSizeDistribution.species_keys_ext))
 		i = 0
-		for key in GrainSizeDistribution.species_keys:
+		for key in GrainSizeDistribution.species_keys_ext:
 			m_spe[i] = np.sum(self.DMSF[key])
 			i += 1
+		return dict(zip(GrainSizeDistribution.species_keys_ext, m_spe / np.sum(m_spe)))
 
-		return dict(zip(GrainSizeDistribution.species_keys,m_spe / np.sum(m_spe)))
-
-
-	def _from_n_to_m(self, arr, key): # TODO: this looks ugly
+	def _from_n_to_m(self, arr, key):
 		return arr * 4 * np.pi / 3 * self.a**3 * GrainSizeDistribution.species_rho_ext[key] # cgs
