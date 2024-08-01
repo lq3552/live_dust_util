@@ -12,11 +12,11 @@ class Galaxy(object):
 		use show_field_list() method
 
 	Parameter:
-		snap: <SnapshotContainer>
-		p_c: <ndarray[3], dtype = float64> center to compute radii
-		r_s: <float32> lower bound of radius interval
-		r_e: <float32> upper bound of radius interval
-		lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
+		snap:  <SnapshotContainer>
+		[p_c]: <ndarray[3], dtype = float64> center to compute radii in code units
+		[r_s]: <float32> lower bound of radius interval in code units
+		[r_e]: <float32> upper bound of radius interval in code units
+		[lz]:  <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
 	_field_list = ["MassesByType",
 				   "Metallicity",

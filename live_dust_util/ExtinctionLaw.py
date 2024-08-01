@@ -9,11 +9,11 @@ class ExtinctionLaw(object):
 	derived from grain size distributions of various species
 
 	parameters:
-	gsd: GrainSizeDistribution object
-	wave: ndarray, wavelengths in micron
-	[op_a]: str, filename of grain radii used by optical property tables
-	[op_gra]: str, directory and prefix of optical proprerty table for graphites
-	[op_sil]: str, directory and prefix of optical property table for silicates
+	gsd:      GrainSizeDistribution object
+	wave:     <ndarray> wavelengths in micron
+	[op_a]:	  <str> filename of grain radii used by optical property tables
+	[op_gra]: <str> directory and prefix of optical proprerty table for graphites
+	[op_sil]: <str> directory and prefix of optical property table for silicates
 	"""
 	_x0 = []
 	_op = []
@@ -51,10 +51,10 @@ class ExtinctionLaw(object):
 
 		parameters:
     
-		wave: ndarray, wavelengths in micron
-		[op_a]: str, filename of grain radii used by optical property tables
-		[op_gra]: str, filename of optical proprerty table for graphites
-		[op_sil]: str, filename of optical property table for silicates
+		wave:     <ndarray> wavelengths in micron
+		[op_a]:   <str> filename of grain radii used by optical property tables
+		[op_gra]: <str> filename of optical proprerty table for graphites
+		[op_sil]: <str> filename of optical property table for silicates
 		"""
 		cls._x0 = np.log10(np.loadtxt(op_a))
 		cls._op = dict.fromkeys(GrainSizeDistribution.species_keys, None)

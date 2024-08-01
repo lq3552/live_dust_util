@@ -14,7 +14,7 @@ class SnapshotContainer(object):
 	"""
 	# URGENT TODO: ad hoc loading // Think about filtered container or full container // Memory-speed tradeoff
     # I seriously don't want users to change those fields
-	# TODO: use name convention for constants 
+	# TODO: support written-in-parallel snapshot files (individual or combined)
 	__field_list = ["PartType0/Density",
 	                "PartType0/Masses",
 					"PartType0/Coordinates",

@@ -13,14 +13,14 @@ class RadialProfile():
 		snap: <SnapshotContainer>
 		wave: <ndarray[], dtype = float64> wavelength
 
-		op_a: str, filename of grain radii used by optical property tables
-		op_gra: str, directory and prefix of optical proprerty table for graphites
-		op_sil: str, directory and prefix of optical property table for silicates
-		a  : <ndarray[], dtype = float64> centers of grain size bins
-		p_c: <ndarray[3], dtype = float64> center to compute radii
-		r_s: <float32> lower bound of radius interval
-		r_e: <float32> upper bound of radius interval
-		nbins: <int> number of bins between r_s and r_e
+		op_a:   <str> filename of grain radii used by optical property tables
+		op_gra: <str> directory and prefix of optical proprerty table for graphites
+		op_sil: <str> directory and prefix of optical property table for silicates
+		a  :    <ndarray[], dtype = float64> centers of grain size bins in micron
+		p_c:    <ndarray[3], dtype = float64> center to compute radii in code units
+		r_s:    <float32> lower bound of radius interval in code units
+		r_e:    <float32> upper bound of radius interval in code units
+		nbins:  <int> number of bins between r_s and r_e in code units
 		lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
 	field_list = ["GasDensity",

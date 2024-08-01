@@ -8,12 +8,12 @@ class GrainSizeDistribution(object):
 	Contains the grain number count or mass as a function of grain sizes in one galaxy.
 
 	Parameters:
-		snap: <SnapshotContainer>
-		a  : <ndarray[], dtype = float64> centers of grain size bins
-		p_c: <ndarray[3], dtype = float64> center to compute radii
-		r_s: <float32> lower bound of radius interval
-		r_e: <float32> upper bound of radius interval
-		lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
+		snap:  <SnapshotContainer>
+		[a]:   <ndarray[], dtype = float64> centers of grain size bins in micron
+		[p_c]: <ndarray[3], dtype = float64> center to compute radii in code units
+		[r_s]: <float32> lower bound of radius interval in code units
+		[r_e]: <float32> upper bound of radius interval in code units
+		[lz]:  <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
 	# class variables
 	species_rho      = {"Aliphatic C": 2.2, "PAH": 2.2, "Silicate": 3.3}
@@ -36,7 +36,7 @@ class GrainSizeDistribution(object):
 			p_c: <ndarray[3], dtype = float64> center to compute radii in code units
 			r_s: <float32> lower bound of radius interval in code units
 			r_e: <float32> upper bound of radius interval in code units
-			lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
+			lz:  <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 		"""
 
 		self.a = a # I need to refactor this because ideally 
@@ -69,13 +69,13 @@ class GrainSizeDistribution(object):
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
 
 
-	def get_grain_size_distribution(self, spe, qtype):
+	def get_grain_size_distribution(self, spe, qtype = "mass"):
 		"""
 		return the grain number count or mass as a function of grain sizes.
 
 		Parameters:
-		spe: str, species: "Aliphatic C", "PAH" or "Silicate"
-		qtype: "mass" or "num"
+		spe: <str> species "Aliphatic C", "PAH" or "Silicate"
+		qtype: <str> "mass" or "num", default = "mass"
 		"""
 		if spe in GrainSizeDistribution.species_keys_ext:
 			if qtype in ["Mass", "mass"]:
@@ -94,7 +94,7 @@ class GrainSizeDistribution(object):
 		"""
 		compute small-to-large-grain mass ratio for different grain species
 
-		return: dict, small-to-large mass ratio
+		return: <dict> small-to-large mass ratio
 		"""
 		i = 0
 		stl = np.zeros(len(GrainSizeDistribution.species_keys_ext))
@@ -111,7 +111,7 @@ class GrainSizeDistribution(object):
 		"""
 		compute abundances of different grain species
 
-		return: dict, abundances
+		return: <dict> abundances
 		"""
 		m_spe = np.zeros(len(GrainSizeDistribution.species_keys_ext))
 		i = 0
