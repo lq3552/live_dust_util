@@ -5,10 +5,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+a = 10**np.linspace(-3, 0 , 16)
+p_c = np.array([300, 300, 300])
+r_s = 0.0
+r_e = 5.0
+
 catalog = GalaxyCatalog()
 for i in range(6,59):
-	snap = Snap(i,'../../smc_mr_h50pc')
-	gal  = Galaxy(snap)
+	snap = Snap(i,"SMC_hr")
+	gal  = Galaxy(snap, a = a, p_c = p_c, r_s = r_s, r_e = r_e)
 	catalog.add(gal)
 
 

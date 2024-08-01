@@ -12,16 +12,17 @@ if __name__ == "__main__":
 	plot grain size distributions
 	"""
 	gsd_tab = []
-	for i in range(50,51):
-		snap = Snap(i,'../../smc_mr_h50pc')
+	for i in range(50,56):
+		snap = Snap(i,"SMC_hr")
 		gsd_tab.append(GSD(snap))
-	i = 6
+
+	i = 0
 	for gsd in gsd_tab:
 	
 		fig, ax = plt.subplots(2,1, sharex = True)
 	
 		for key in GSD.species_keys:
-			ax[0].loglog(gsd.a,gsd.DMSF[key],'-',label=key)
+			ax[0].loglog(gsd.a, gsd.DMSF[key], '-', label=key)
 		ax[0].legend()
 		ax[0].set_ylabel(r'$\rho_{\rm gr} a^3 \times N $')
 	
@@ -30,17 +31,17 @@ if __name__ == "__main__":
 		ax[1].set_ylabel(r'PAH / Carbonaceous')
 		ax[1].set_ylim(0.1, 1.1)
 	
-		plt.savefig('dmsf_smc.%03d.png' % i,dpi=300)
+		plt.savefig(f'dmsf_smc_{i: 03d}.png',dpi=300)
 		plt.close()
 		i += 1
 	
 	
 	"""
-	plot grain species abundances
+	plot evolution of grain species abundances
 	"""
 	gsd_tab = []
 	for i in range(6,51):
-		snap = Snap(i,'../../smc_mr_h50pc')
+		snap = Snap(i,"SMC_hr")
 		gsd_tab.append(GSD(snap))
 	C_frac, PAH_frac, Si_frac = [], [], []
 	tsim = []

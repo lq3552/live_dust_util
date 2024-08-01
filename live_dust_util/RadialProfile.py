@@ -23,7 +23,8 @@ class RadialProfile():
 		nbins:  <int> number of bins between r_s and r_e in code units
 		lz: <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
-	field_list = ["GasDensity",
+	field_list = [
+				  "GasDensity",
 				  "SigmaGas",
 				  "DustDensity",
 				  "SigmaSFR",

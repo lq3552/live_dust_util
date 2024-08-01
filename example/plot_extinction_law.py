@@ -7,25 +7,26 @@ import live_dust_util.ExtinctionLawParam as ExtPar
 
 if __name__ == "__main__":
 	"""
-	test ExtinctionLaw class, plot extinction curves
+	test ExtinctionLaw and ExtinctionLawParam class, plot extinction curves
 	"""
 	gsd_tab = []
-	for i in range(30,31):
-		snap = Snap(i,'../../smc_mr_h50pc')
-		gsd_tab.append(GSD(snap))
-	for i in range(20,21):
-		snap = Snap(i,'../../mw_mr_h100pc')
-		gsd_tab.append(GSD(snap))
+
+	a = 10**np.linspace(-3, 0 , 16)
+	p_c = np.array([300, 300, 300])
+	r_s = 0.0
+	r_e = 30.0
+
+	for i in range(30,36):
+		snap = Snap(i,"MW_hr")
+		gsd_tab.append(GSD(snap, a = a, p_c = p_c, r_s = r_s, r_e = r_e))
+
 	wave = 10**np.linspace(-1,0,200)
-	label=['SMC','MW']
-	i = 0
 	for gsd in gsd_tab:
 		ext = Ext(gsd, wave, 
 				  op_a = '../../grain_size.txt',
 				  op_gra ='../../Gra_Optical/Gra_LD93_',
 				  op_sil = '../../Sil_Optical/Sil_LD93_')
-		plt.semilogx(wave, ext.extinction, label=label[i])
-		i += 1
+		plt.semilogx(wave, ext.extinction)
 	
 	plt.semilogx(wave,ExtPar.cardelli(wave, tau_v=1, R_v=2.0),'k--',label='Cardelli')
 	plt.semilogx(wave,ExtPar.cardelli(wave, tau_v=1, R_v=3.1),'k--')
@@ -33,6 +34,5 @@ if __name__ == "__main__":
 	plt.semilogx(wave,ExtPar.smc(wave, tau_v=1), 'r--', label='Pei')
 	plt.xlabel(r'$\lambda\ ({\rm \mu m})$')
 	plt.ylabel(r'$A(\lambda)/A(V)$')
-	plt.legend()
-	plt.savefig('ext.png')
+	plt.savefig('ext_mw_hr.png')
 	plt.close()
