@@ -118,7 +118,7 @@ class GrainSizeDistribution(object):
 		for key in GrainSizeDistribution.species_keys_ext:
 			m_spe[i] = np.sum(self.DMSF[key])
 			i += 1
-		return dict(zip(GrainSizeDistribution.species_keys_ext, m_spe / np.sum(m_spe)))
+		return dict(zip(GrainSizeDistribution.species_keys_ext, m_spe / np.sum(m_spe[:-1])))
 
 	def _from_n_to_m(self, arr, key):
 		return arr * 4 * np.pi / 3 * self.a**3 * GrainSizeDistribution.species_rho_ext[key] # cgs
