@@ -8,14 +8,15 @@ class SnapshotContainer(object):
 		use show_field_list()
 
 	Parameter:
-		snap_no: <int> No. of the input snapshot
+		snap_no: <int> No. of the input snapshot or <str> to load the sub-snapshot
 		snap_dir: <str> directory name of the input snapshot; default = '.'
 		snap_pref: <str> prefix of the input snapshot; default = 'snapshot'
 	"""
 	# URGENT TODO: ad hoc loading // Think about filtered container or full container // Memory-speed tradeoff
     # I seriously don't want users to change those fields
 	# TODO: support written-in-parallel snapshot files (individual or combined)
-	__field_list = ["PartType0/Density",
+	__field_list = [
+					"PartType0/Density",
 	                "PartType0/Masses",
 					"PartType0/Coordinates",
 					"PartType0/GFM_Metallicity",
@@ -30,12 +31,14 @@ class SnapshotContainer(object):
 					"PartType4/Masses",
 					"PartType4/Coordinates",
 					"PartType4/SNIaNumber",
-					"PartType4/SNIINumber"]
+					"PartType4/SNIINumber"
+				   ]
 	_part_types = ['PartType0', 'PartType3', 'PartType4']
 
 	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot'):
 		self.dataset = dict.fromkeys(SnapshotContainer.__field_list, None)
-		snap = h5py.File('%s/%s_%03d.hdf5' % (snap_dir, snap_pref, snap_no), 'r')
+		snap_no = str(snap_no).zfill(3)
+		snap = h5py.File(f"{snap_dir}/{snap_pref}_{snap_no}.hdf5", 'r')
 		for key in self.dataset.keys():
 			self.dataset[key] = snap[key][()]
 		# used to compute filters
