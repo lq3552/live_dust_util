@@ -20,6 +20,10 @@ class GrainSizeDistribution(object):
 	species_rho_ext  = {"Aliphatic C": 2.2, "PAH": 2.2, "Silicate": 3.3, "Carbonaceous": 3.3} #better solution to this?
 	species_keys     = species_rho.keys()
 	species_keys_ext = species_rho_ext.keys()
+	DL_GRAIN_BINS = 16
+	SEC_PER_GIGAYEAR = 3.15576e16
+	PROTONMASS = 1.67262178e-24
+	CM_TO_UM = 1e4
 
 
 	def __init__(self, snap, a = 10**np.linspace(-3,0,16), p_c = [], r_s = None, r_e = None, lz = np.array([0.,0.,1.])):
@@ -38,7 +42,7 @@ class GrainSizeDistribution(object):
 			r_e: <float32> upper bound of radius interval in code units
 			lz:  <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 		"""
-
+		self.snap = snap
 		self.a = a # I need to refactor this because ideally 
 		if len(self.a) > 1:
 			self.dloga = np.log10(self.a[1] / self.a[0])
@@ -67,7 +71,12 @@ class GrainSizeDistribution(object):
 			self.DNSF["Carbonaceous"] = self.DNSF["Aliphatic C"] # no need to deep copy since they are actually the same
 		for key in GrainSizeDistribution.species_keys_ext:
 			self.DMSF[key] = self._from_n_to_m(self.DNSF[key],key)
-
+		'''
+		# compute rates of physical processes
+		self.rates = dict.fromkeys(SnapshotContainer.__rates_list, np.zeros((snap.dataset["PartType3/Masses"].shape[0], 2))) ### TODO: more flexible
+		self._compute_rates(0)
+		self._compute_rates(1)
+		'''
 
 	def get_grain_size_distribution(self, spe, qtype = "mass"):
 		"""
@@ -89,6 +98,7 @@ class GrainSizeDistribution(object):
 			print("Species not found! Please make sure:")
 			print("species keyword in",list(GrainSizeDistribution.species_keys_ext))
 			return np.array([])
+
 
 	def compute_small_to_large_ratio(self):
 		"""
@@ -122,3 +132,35 @@ class GrainSizeDistribution(object):
 
 	def _from_n_to_m(self, arr, key):
 		return arr * 4 * np.pi / 3 * self.a**3 * GrainSizeDistribution.species_rho_ext[key] # cgs
+
+	'''
+	def _compute_rates(self, s):
+		self.__compute_rates_shatter_coagulate(s)
+		#self.rates["Shattering"] = 0
+		#self.rates["Coagulation"] = 0
+		print(self.rates)
+
+
+	def __compute_rates_shatter_coagulate(self, s)
+		Mass = self.snap.dataset["PartType3/Masses"]
+		DustDensity = self.snap.dataset["PartType3/Dust_DustDensity"]
+		cf_atime = 1 / (1 + self.snap.header["Redshift"])
+		cf_a3inv = 1 / cf_atime ** 3
+		print(cf_a3inv)
+		UnitLength_in_cm = self.snap.header["UnitLength_in_cm"]
+		UnitMass_in_g = self.snap.header["UnitMass_in_g"]
+		UnitDensity_in_cgs = UnitMass_in_g / UnitLength_in_cm ** 3
+		UnitVelocity_in_cm_per_s = self.snap.header["UnitVelocity_in_cm_per_s"]
+		HubbleParam = self.snap.header["HubbleParam"]
+
+		V_d = Mass / (DustDensity * cf_a3inv)
+		V_d_um3 = V_d * pow(UnitLength_in_cm / HubbleParam * self.CM_TO_UM, 3.0)
+
+		v_rels = np.zeros((self.DL_GRAIN_BINS, self.DL_GRAIN_BINS))
+		v_grain = np.zeros(self.DL_GRAIN_BINS)
+		cs = self.snap.dataset["PartType3/Dust_GasSoundSpeed"] * np.sqrt(All.cf_atime) * UnitVelocity_in_cm_per_s
+		T_local = self.snap.dataset["PartType3/Dust_GasTemperature"]
+		rho_local = self.snap.dataset["PartType3/Dust_GasDensity"] * cf_a3inv
+		rho_ref = self.PROTONMASS / (UnitDensity_in_cgs * HubbleParam * HubbleParam)
+		
+	'''	

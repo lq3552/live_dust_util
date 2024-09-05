@@ -1,5 +1,6 @@
 import h5py
 import numpy as np
+from .utils import IndexUtil
 
 class SnapshotContainer(object):
 	"""
@@ -15,17 +16,29 @@ class SnapshotContainer(object):
 	# URGENT TODO: ad hoc loading // Think about filtered container or full container // Memory-speed tradeoff
     # I seriously don't want users to change those fields
 	# TODO: support written-in-parallel snapshot files (individual or combined)
+	__header_list = [
+					 "HubbleParam",
+					 "Redshift",
+					 "UnitLength_in_cm",
+					 "UnitMass_in_g",
+					 "UnitVelocity_in_cm_per_s"
+					]
 	__field_list = [
-					"PartType0/Density",
 	                "PartType0/Masses",
+					"PartType0/Density",
 					"PartType0/Coordinates",
 					"PartType0/GFM_Metallicity",
 					"PartType0/GFM_Metals",
 					"PartType0/MolecularHFrac",
 					"PartType0/StarFormationRate",
-		            "PartType3/Dust_NumGrains",
-		            "PartType3/Dust_DustDensity",
 					"PartType3/Masses",
+		            "PartType3/Dust_DustDensity",
+		            "PartType3/Dust_NumGrains",
+					"PartType3/Dust_GasDensity",
+					"PartType3/Dust_GasTemperature",
+					"PartType3/Dust_GasSoundSpeed",
+					"PartType3/Dust_TauShatter",
+					"PartType3/Dust_TauCoagulate",
 					"PartType3/Coordinates",
 					"PartType3/Dust_MetalFractions",
 					"PartType4/Masses",
@@ -33,20 +46,35 @@ class SnapshotContainer(object):
 					"PartType4/SNIaNumber",
 					"PartType4/SNIINumber"
 				   ]
+	__rates_list = [
+					"Growth",
+					"Sputtering",
+					"SN_Destruction",
+					"Shattering",
+					"Coagulation"
+				   ]
 	_part_types = ['PartType0', 'PartType3', 'PartType4']
 
-	def __init__(self, snap_no, snap_dir = '.', snap_pref = 'snapshot'):
-		self.dataset = dict.fromkeys(SnapshotContainer.__field_list, None)
+
+	def __init__(self, snap_no, snap_dir = ".", snap_pref = "snapshot"):
 		snap_no = str(snap_no).zfill(3)
-		snap = h5py.File(f"{snap_dir}/{snap_pref}_{snap_no}.hdf5", 'r')
+		snap = h5py.File(f"{snap_dir}/{snap_pref}_{snap_no}.hdf5", "r")
+		# load header
+		self.header = dict.fromkeys(SnapshotContainer.__header_list, None)
+		for key in self.header.keys():
+			self.header[key] = snap["Header"].attrs[key]
+		# load dataset
+		self.dataset = dict.fromkeys(SnapshotContainer.__field_list, None)
 		for key in self.dataset.keys():
 			self.dataset[key] = snap[key][()]
 		# used to compute filters
 		self.p_c, self.r_s, self.r_e, self.lz = np.array([np.nan,np.nan,np.nan]), np.nan, np.nan, np.array([0.,0.,1.])
 		self.filt = dict.fromkeys(SnapshotContainer._part_types, None)
+
 			
 	def show_field_list(self):
 		print(list(self.dataset.keys()))
+
 
 	def compute_filter(self, p_c, r_s, r_e, lz):
 		"""

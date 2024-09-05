@@ -18,14 +18,18 @@ class Galaxy(object):
 		[r_e]: <float32> upper bound of radius interval in code units
 		[lz]:  <ndarray[3], dtype = float64> direction of angular momentum, default [0, 0, 1]
 	"""
-	_field_list = ["MassesByType",
+	_field_list = [
+				   "MassesByType",
 				   "Metallicity",
 				   "SFR",
 				   "RatioCOtoC",
 				   "GrainSizeDistributions",
 				   "ExtinctionQuantities",
 				   "VirialQuantities",
-				   "SNNumber"]
+				   "SNNumber",
+				   "TauShatter",
+				   "TauCoagulate"
+				  ]
 
 	def __init__(self, snap, p_c = [], r_s = None, r_e = None, lz = np.array([0.,0.,1.])):
 		self.filt = snap.compute_filter(p_c, r_s, r_e, lz)
@@ -39,6 +43,18 @@ class Galaxy(object):
 		self.dataset["SNNumber"] = np.sum(snap.dataset["PartType4/SNIaNumber"][self.filt["PartType4"]]
 								        + snap.dataset["PartType4/SNIINumber"][self.filt["PartType4"]])
 		self.dataset["SFR"] = np.sum(snap.dataset["PartType0/StarFormationRate"][self.filt["PartType0"]]) 
+		tauShatter = snap.dataset["PartType3/Dust_TauShatter"][self.filt["PartType3"]]
+		mShatter = snap.dataset["PartType3/Masses"][self.filt["PartType3"]]
+		filt2 = np.where(tauShatter < 1e2)
+		tauShatter = tauShatter[filt2]
+		mShatter = mShatter[filt2]
+		tauCoagulate = snap.dataset["PartType3/Dust_TauCoagulate"][self.filt["PartType3"]]
+		mCoagulate = snap.dataset["PartType3/Masses"][self.filt["PartType3"]]
+		filt2 = np.where(tauCoagulate < 1e2)
+		tauCoagulate = tauCoagulate[filt2]
+		mCoagulate = mCoagulate[filt2]
+		self.dataset["TauShatter"] = np.sum(tauShatter * mShatter) / np.sum(mShatter)
+		self.dataset["TauCoagulate"] =  np.sum(tauCoagulate * mCoagulate) / np.sum(mCoagulate)
 		### self.dataset["GrainSizeDistributions"] = GrainSizeDistribution(snap) ###
 		### self.dataset["ExtinctionQuantities"] ### I leave it to future work since I really don't like current implementation of ExtinctionLaw
 		self._compute_abundances(snap)
